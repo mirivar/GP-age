@@ -1,12 +1,16 @@
+#!/usr/bin/env python3
+
 import GPy
 import argparse
 
 import pandas as pd
 
-from os import path
+import os
 
 from sklearn.metrics import mean_squared_error, median_absolute_error, mean_absolute_error
 from sklearn.impute import SimpleImputer
+
+os.getcwd()
 
 
 def calc_stats(prediction, y):
@@ -31,7 +35,7 @@ def predict(X_path, y_path=None, output_dir=None):
 	predictions.index.name = 'sample'
 
 	if output_dir is not None:
-		predictions.to_csv(path.join(output_dir, 'GP-age_predictions.csv'), float_format='%.3f')
+		predictions.to_csv(os.path.join(output_dir, 'GP-age_predictions.csv'), float_format='%.3f')
 
 	else:
 		print('Predictions:\n', predictions)
@@ -45,7 +49,7 @@ def predict(X_path, y_path=None, output_dir=None):
 
 		stats = calc_stats(predictions, y)
 		if output_dir is not None:
-			stats.to_csv(path.join(output_dir, 'GP-age_stats.csv'), float_format='%.3f')
+			stats.to_csv(os.path.join(output_dir, 'GP-age_stats.csv'), float_format='%.3f')
 		else:
 			print('\nstats:\n', stats)
 
