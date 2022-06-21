@@ -18,7 +18,7 @@ def calc_stats(prediction, y):
 
 
 def predict(X_path, y_path=None, output_dir=None):
-	sites = pd.read_csv('blood_dynamical_range_adults_0.2_high_quality_no_child_GSE_corr_0.4.csv').iloc[:, 0]
+	sites = pd.read_csv('blood_dynamical_range_adults_0.2_high_quality_no_child_GSE_corr_0.4_sites.csv').iloc[:, 0]
 	X = pd.read_csv(X_path, index_col=0)
 	X = X[sites]
 
@@ -28,6 +28,7 @@ def predict(X_path, y_path=None, output_dir=None):
 		X = pd.DataFrame(data=imputer.transform(X), index=X.index, columns=X.columns.values.tolist())
 
 	predictions = pd.DataFrame({'predictions': predictor.predict(X.values)[0].squeeze()}, index=X.index)
+	predictions.index.name = 'sample'
 
 	if output_dir is not None:
 		predictions.to_csv(path.join(output_dir, 'GP-age_predictions.csv'), float_format='%.3f')
@@ -36,7 +37,12 @@ def predict(X_path, y_path=None, output_dir=None):
 		print('Predictions:\n', predictions)
 
 	if y_path is not None:
-		y = pd.read_csv(y_path, index_col=0).iloc[:, 0]
+		y = pd.read_csv(y_path, header=None)
+		if y.shape[1] > 1:
+			y.index = y.iloc[:, 0]
+			y = y.loc[X.index]
+		y = y.iloc[:, -1]
+
 		stats = calc_stats(predictions, y)
 		if output_dir is not None:
 			stats.to_csv(path.join(output_dir, 'GP-age_stats.csv'), float_format='%.3f')
