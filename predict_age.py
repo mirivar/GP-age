@@ -23,7 +23,7 @@ def calc_stats(prediction, y):
 
 def predict(X_path, y_path=None, output_dir=None):
 	sites = pd.read_csv('blood_dynamical_range_adults_0.2_high_quality_no_child_GSE_corr_0.4_sites.csv').iloc[:, 0]
-	X = pd.read_csv(X_path, index_col=0)
+	X = pd.read_csv(X_path, index_col=0).T
 	X = X[sites]
 
 	predictor = GPy.models.GPRegression.load_model('blood_dynamical_range_adults_0.2_high_quality_no_child_GSE_corr_0.4.json.zip')
@@ -41,7 +41,7 @@ def predict(X_path, y_path=None, output_dir=None):
 		print('Predictions:\n', predictions)
 
 	if y_path is not None:
-		y = pd.read_csv(y_path, header=None)
+		y = pd.read_csv(y_path)
 		if y.shape[1] > 1:
 			y.index = y.iloc[:, 0]
 			y = y.loc[X.index]
@@ -68,8 +68,8 @@ if __name__ == '__main__':
 
 	assert args.x is not None or args.test
 	if args.test:
-		x = 'x_test.csv'
-		y = 'y_test.csv'
+		x = 'meth_test.csv'
+		y = 'age_test.csv'
 
 	else:
 		x = args.x
