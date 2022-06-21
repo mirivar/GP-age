@@ -38,7 +38,7 @@ def predict(X_path, y_path=None, output_dir=None):
 		predictions.to_csv(os.path.join(output_dir, 'GP-age_predictions.csv'), float_format='%.3f')
 
 	else:
-		print('Predictions:\n', predictions)
+		print(predictions.round(3))
 
 	if y_path is not None:
 		y = pd.read_csv(y_path)
@@ -51,7 +51,7 @@ def predict(X_path, y_path=None, output_dir=None):
 		if output_dir is not None:
 			stats.to_csv(os.path.join(output_dir, 'GP-age_stats.csv'), float_format='%.3f')
 		else:
-			print('\nstats:\n', stats)
+			print('\n', stats.round(3))
 
 	a=1
 
