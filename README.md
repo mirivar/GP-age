@@ -1,7 +1,7 @@
 # GP-age
 
 GP-age is an epigenetic clock for age prediction using blood methylomes. 
-Here we provide a commandline stand-alone python version of it.
+Here we provide a commandline standalone python version of it.
  
 ## Requirements
 GP-age runs on python3, and the following packages are required:
@@ -32,16 +32,16 @@ The stand-alone has several arguments.
   * A csv file, with first column containing the sample IDs, and second columns containing the ages. First line is a header line (see `age_test.csv` for an example)
   * A txt file, with a column of ages of the samples listed in same order as in the methylation array. First line is a header line.
 * -o: Output directory, optional. If not provided, results will be printed to stdout.
-* -t: Add if wish to run GP-age on the predefined test set (quick start).
+* -t: Add if wish to run GP-age on the predefined test set (demo).
 
 ## Execution
-The stand-alone should be executed by running the following command:
+The standalone should be executed by running the following command:
 ```
 /cs/cbio/miri/thesis/epigenetic_clock/src/GP-age/predict_age.py <arguments>
 ```
 The arguments provided will define the behavior of the prediction, as listed below.
 
-### Quick start
+### Demo
 For a quick age prediction over a pre-defined test set, run:
 ```
 /cs/cbio/miri/thesis/epigenetic_clock/src/GP-age/predict_age.py -t
@@ -52,6 +52,6 @@ The predictions and statistics will be printed to stdout.
 ```
 /cs/cbio/miri/thesis/epigenetic_clock/src/GP-age/predict_age.py -x <meth. array path> [-y <ages path> -o <output dir>]
 ```
-Age of samples from the provided methylation array will be predicted. If an output dir is provided, they will be saved as a csv under `<output_dir>/GP-age_predictions.csv`. If not output dir is provided, they will be printed to stdout.
+Age of samples from the provided methylation array will be predicted. If an output dir is provided, they will be saved as a csv under `<output_dir>/GP-age_predictions.csv`. If no output dir is provided, predictions will be printed to stdout.
 
-If an ages file is provided, statistics (RMSE, MedAE (median absolute error), and MeanAE (mean absolute error)) will be calculated. If an output dir is provided, they will be saved as a csv under `<output_dir>/GP-age_stats.csv`. If not output dir is provided, they will be printed to stdout.
+If an ages file is provided, statistics (RMSE, MedAE (median absolute error), and MeanAE (mean absolute error)) will be calculated. If an output dir is provided, they will be saved as a csv under `<output_dir>/GP-age_stats.csv`. If no output dir is provided, statistics will be printed to stdout.
