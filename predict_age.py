@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-
+import os
 import GPy
 import argparse
-
+import logging
 import pandas as pd
-
-import os
 
 from sklearn.metrics import mean_squared_error, median_absolute_error, mean_absolute_error
 from sklearn.impute import SimpleImputer
 
 os.getcwd()
+logging.basicConfig()
+logger = logging.getLogger('GP-age')
+logger.setLevel(logging.INFO)
 
 
 def calc_stats(prediction, y):
@@ -21,39 +22,59 @@ def calc_stats(prediction, y):
 	return pd.DataFrame({'stats': [rmse, med_ae, mean_ae]}, index=['RMSE', 'MedAE', 'MeanAE'])
 
 
+def output_results(results, results_type, output_dir):
+	if output_dir is not None:
+		output_path = os.path.join(output_dir, f'GP-age_{results_type}.csv')
+		results.to_csv(output_path, float_format='%.3f')
+		logger.info(f'{results_type.capitalize()} were saved to {output_path}')
+
+	else:
+		print(results.round(3), '\n')
+
+
 def predict(X_path, y_path=None, output_dir=None):
-	sites = pd.read_csv('GP-age_sites.csv').iloc[:, 0]
+	logger.info('Starting age prediction using GP-age')
+
+	# Load methylation data for pre-defined CpG sites
+	sites = pd.read_csv('model_data/GP-age_sites.csv').iloc[:, 0]
+	logger.info(f'Loading methylation data...')
 	X = pd.read_csv(X_path, index_col=0).T
 	X = X[sites]
+	logger.info(f'Successfully loaded {X.shape[0]} samples')
 
-	predictor = GPy.models.GPRegression.load_model('GP-age_model.json.zip')
+	# Load GP-age model
+	logger.info(f'Loading GP-age model...')
+	predictor = GPy.models.GPRegression.load_model('model_data/GP-age_model.json.zip')
+	logger.info('GP-age successfully loaded')
+
+	# Fill missing values with the mean beta value of the specific CpG across train samples
 	if X.isna().any(axis=None):
+		logger.info(f'Imputing {X.isna().sum()} missing values')
 		imputer = SimpleImputer().fit(pd.DataFrame(predictor.X, columns=sites))
 		X = pd.DataFrame(data=imputer.transform(X), index=X.index, columns=X.columns.values.tolist())
 
+	# Predict age
+	logger.info('Starting age prediction...')
 	predictions = pd.DataFrame({'predictions': predictor.predict(X.values)[0].squeeze()}, index=X.index)
 	predictions.index.name = 'sample'
+	logger.info('Age prediction completed')
+	output_results(predictions, 'predictions', output_dir)
 
-	if output_dir is not None:
-		predictions.to_csv(os.path.join(output_dir, 'GP-age_predictions.csv'), float_format='%.3f')
-
-	else:
-		print(predictions.round(3))
-
+	# If real age is provided, calculate prediction statistics
 	if y_path is not None:
+		logger.info('Calculating statistics')
 		y = pd.read_csv(y_path)
+
+		# For support of 2-column csv files
 		if y.shape[1] > 1:
 			y.index = y.iloc[:, 0]
 			y = y.loc[X.index]
 		y = y.iloc[:, -1]
 
 		stats = calc_stats(predictions, y)
-		if output_dir is not None:
-			stats.to_csv(os.path.join(output_dir, 'GP-age_stats.csv'), float_format='%.3f')
-		else:
-			print('\n', stats.round(3))
+		output_results(stats, 'stats', output_dir)
 
-	a=1
+	logger.info('Done!')
 
 
 if __name__ == '__main__':
@@ -68,8 +89,8 @@ if __name__ == '__main__':
 
 	assert args.x is not None or args.test
 	if args.test:
-		x = 'meth_test.csv'
-		y = 'age_test.csv'
+		x = 'csv/meth_test.csv'
+		y = 'csv/age_test.csv'
 
 	else:
 		x = args.x
