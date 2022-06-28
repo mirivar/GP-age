@@ -22,11 +22,11 @@ def calc_stats(prediction, y):
 
 
 def predict(X_path, y_path=None, output_dir=None):
-	sites = pd.read_csv('blood_dynamical_range_adults_0.2_high_quality_no_child_GSE_corr_0.4_sites.csv').iloc[:, 0]
+	sites = pd.read_csv('GP-age_sites.csv').iloc[:, 0]
 	X = pd.read_csv(X_path, index_col=0).T
 	X = X[sites]
 
-	predictor = GPy.models.GPRegression.load_model('blood_dynamical_range_adults_0.2_high_quality_no_child_GSE_corr_0.4.json.zip')
+	predictor = GPy.models.GPRegression.load_model('GP-age_model.json.zip')
 	if X.isna().any(axis=None):
 		imputer = SimpleImputer().fit(pd.DataFrame(predictor.X, columns=sites))
 		X = pd.DataFrame(data=imputer.transform(X), index=X.index, columns=X.columns.values.tolist())
