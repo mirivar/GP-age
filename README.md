@@ -2,6 +2,8 @@
 
 GP-age is an epigenetic clock for age prediction using blood methylomes. 
 Here we provide a commandline standalone python version of it.
+
+This project is developed by Miri Varshavsky in [Prof. Tommy Kaplan's lab](https://www.cs.huji.ac.il/~tommy/) at the Hebrew University, Jerusalem, Israel.
  
 ## Requirements
 GP-age runs on python3, and the following packages are required:
