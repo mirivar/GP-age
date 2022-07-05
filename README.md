@@ -39,20 +39,20 @@ The stand-alone has several arguments.
 ## Execution
 The standalone should be executed by running the following command:
 ```
-/cs/cbio/miri/thesis/epigenetic_clock/src/GP-age/predict_age.py <arguments>
+predict_age.py <arguments>
 ```
 The arguments provided will define the behavior of the prediction, as listed below.
 
 ### Demo
 For a quick age prediction over a pre-defined test set, run:
 ```
-/cs/cbio/miri/thesis/epigenetic_clock/src/GP-age/predict_age.py -t
+predict_age.py -t
 ```
 The predictions and statistics will be printed to stdout.
 
 ### Full usage example
 ```
-/cs/cbio/miri/thesis/epigenetic_clock/src/GP-age/predict_age.py -x <meth. array path> [-y <ages path> -o <output dir>]
+predict_age.py -x <meth. array path> [-y <ages path> -o <output dir>]
 ```
 Age of samples from the provided methylation array will be predicted. If an output dir is provided, they will be saved as a csv under `<output_dir>/GP-age_predictions.csv`. If no output dir is provided, predictions will be printed to stdout.
 
