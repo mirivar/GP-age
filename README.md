@@ -33,6 +33,7 @@ The stand-alone has several arguments.
 * -y: A path to a file containing the ages of the samples. Optional. Two formats are supported:
   * A csv file, with first column containing the sample IDs, and second columns containing the ages. First line is a header line (see `age_test.csv` for an example)
   * A txt file, with a column of ages of the samples listed in same order as in the methylation array. First line is a header line.
+* -n: Model size to run (10, 30 or 80). Default is 30.
 * -o: Output directory, optional. If not provided, results will be printed to stdout.
 * -t: Add if wish to run GP-age on the predefined test set (demo).
 
@@ -52,8 +53,8 @@ The predictions and statistics will be printed to stdout.
 
 ### Full usage example
 ```
-predict_age.py -x <meth. array path> [-y <ages path> -o <output dir>]
+predict_age.py -x <meth. array path> [-y <ages path> -o <output dir> -n <model size>]
 ```
-Age of samples from the provided methylation array will be predicted. If an output dir is provided, they will be saved as a csv under `<output_dir>/GP-age_predictions.csv`. If no output dir is provided, predictions will be printed to stdout.
+Age of samples from the provided methylation array will be predicted using a GP-age of size <n> (default is n=30). If an output dir is provided, they will be saved as a csv under `<output_dir>/GP-age_<n>_cpgs_predictions.csv`. If no output dir is provided, predictions will be printed to stdout.
 
-If an ages file is provided, statistics (RMSE, MedAE (median absolute error), and MeanAE (mean absolute error)) will be calculated. If an output dir is provided, they will be saved as a csv under `<output_dir>/GP-age_stats.csv`. If no output dir is provided, statistics will be printed to stdout.
+If an ages file is provided, statistics (RMSE, MedAE (median absolute error), and MeanAE (mean absolute error)) will be calculated. If an output dir is provided, they will be saved as a csv under `<output_dir>/GP-age_<n>_cpgs_stats.csv`. If no output dir is provided, statistics will be printed to stdout.
