@@ -9,10 +9,10 @@ This project is developed by Miri Varshavsky in [Prof. Tommy Kaplan's lab](https
 ## Requirements
 GP-age runs on python3, and the following packages are required:
 
-* matplotlib (required for GPy)
-* pandas
-* scikit-learn
-* GPy
+* matplotlib (required for GPy, tested on version 3.4.1)
+* pandas (tested on version 1.3.5)
+* scikit-learn (tested on version 0.24.2)
+* GPy (tested on version 1.10.0)
 
 These packages can be installed by running the following commands:
 ```
@@ -27,6 +27,7 @@ pip install gpy
 git clone https://github.com/mirivar/GP-age.git
 cd GP-age
 ```
+Installation should take less than 1 minute.
 
 ## Arguments
 The stand-alone has several arguments.
@@ -50,7 +51,7 @@ For a quick age prediction over a pre-defined test set, run:
 ```
 predict_age.py -t
 ```
-The predictions and statistics will be printed to stdout.
+The predictions and statistics will be printed to stdout. Running the demo should take less than 2 minutes. An example of the output can be found in the demo_results folder.
 
 ### Full usage example
 ```
