@@ -90,8 +90,8 @@ if __name__ == '__main__':
 
 	assert args.x is not None or args.test
 	if args.test:
-		x = 'csv/meth_test.csv'
-		y = 'csv/age_test.csv'
+		x = 'demo/meth_test.csv'
+		y = 'demo/age_test.csv'
 
 	else:
 		x = args.x
