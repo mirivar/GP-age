@@ -22,21 +22,22 @@ def calc_stats(prediction, y):
 	return pd.DataFrame({'stats': [rmse, med_ae, mean_ae]}, index=['RMSE', 'MedAE', 'MeanAE'])
 
 
-def output_results(results, results_type, output_dir, n):
+def output_results(results, results_type, output_dir, title):
 	if output_dir is not None:
-		output_path = os.path.join(output_dir, f'GP-age_{n}_cpgs_{results_type}.csv')
+		output_path = os.path.join(output_dir, f'GP-age_{title}_{results_type}.csv')
 		results.to_csv(output_path, float_format='%.3f')
 		logger.info(f'{results_type.capitalize()} were saved to {output_path}')
 
 	else:
-		print(results.round(3), '\n')
+		print('\n', results.round(3), '\n')
 
 
-def predict(n, X_path, y_path=None, output_dir=None):
-	logger.info('Starting age prediction using GP-age')
+def predict(m, X_path, y_path=None, output_dir=None):
+	title = f'{m}_cpgs' if m not in ['a', 'b', 'c'] else m
+	logger.info(f'Starting age prediction using GP-age ({title})')
 
 	# Load methylation data for pre-defined CpG sites
-	sites = pd.read_csv(f'model_data/GP-age_sites_{n}_cpgs.csv').iloc[:, 0]
+	sites = pd.read_csv(f'model_data/GP-age_sites_{title}.csv').iloc[:, 0]
 	logger.info(f'Loading methylation data...')
 	X = pd.read_csv(X_path, index_col=0).T
 	X = X[sites]
@@ -44,7 +45,7 @@ def predict(n, X_path, y_path=None, output_dir=None):
 
 	# Load GP-age model
 	logger.info(f'Loading GP-age model...')
-	predictor = GPy.models.GPRegression.load_model(f'model_data/GP-age_model_{n}_cpgs.json.zip')
+	predictor = GPy.models.GPRegression.load_model(f'model_data/GP-age_model_{title}.json.zip')
 	logger.info('GP-age successfully loaded')
 
 	# Fill missing values with the mean beta value of the specific CpG across train samples
@@ -58,7 +59,7 @@ def predict(n, X_path, y_path=None, output_dir=None):
 	predictions = pd.DataFrame({'predictions': predictor.predict(X.values)[0].squeeze()}, index=X.index)
 	predictions.index.name = 'sample'
 	logger.info('Age prediction completed')
-	output_results(predictions, 'predictions', output_dir, n)
+	output_results(predictions, 'predictions', output_dir, title)
 
 	# If real age is provided, calculate prediction statistics
 	if y_path is not None:
@@ -72,7 +73,7 @@ def predict(n, X_path, y_path=None, output_dir=None):
 		y = y.iloc[:, -1]
 
 		stats = calc_stats(predictions, y)
-		output_results(stats, 'stats', output_dir, n)
+		output_results(stats, 'stats', output_dir, title)
 
 	logger.info('Done!')
 
@@ -84,7 +85,7 @@ if __name__ == '__main__':
 	parser.add_argument('-y', help='csv path to real age', required=False)
 	parser.add_argument('-o', '--output', help='output directory. If None, will print results to stdout')
 	parser.add_argument('-t', '--test', action='store_true', help='run test on provided test set')
-	parser.add_argument('-n', help='model size to run (10, 30 or 80)', choices=[10, 30, 80], default=30, type=int)
+	parser.add_argument('-m', help='model to run (10, 30, 80, a, b, or c)', choices=['10', '30', '80', 'a', 'b', 'c'], default='30')
 	args = parser.parse_args()
 
 	assert args.x is not None or args.test
@@ -96,4 +97,4 @@ if __name__ == '__main__':
 		x = args.x
 		y = args.y
 
-	predict(n=args.n, X_path=x, y_path=y, output_dir=args.output)
+	predict(m=args.m, X_path=x, y_path=y, output_dir=args.output)
