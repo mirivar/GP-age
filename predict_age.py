@@ -85,7 +85,7 @@ if __name__ == '__main__':
 	parser.add_argument('-y', help='csv path to real age', required=False)
 	parser.add_argument('-o', '--output', help='output directory. If None, will print results to stdout')
 	parser.add_argument('-t', '--test', action='store_true', help='run test on provided test set')
-	parser.add_argument('-m', help='model to run (10, 30, 80, a, b, or c)', choices=['10', '30', '80', 'a', 'b', 'c'], default='30')
+	parser.add_argument('-m', help='model to run (10, 30, 71, a, b, or c)', choices=['10', '30', '71', 'a', 'b', 'c'], default='30')
 	args = parser.parse_args()
 
 	assert args.x is not None or args.test
