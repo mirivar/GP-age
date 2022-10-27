@@ -41,6 +41,9 @@ def predict(m, X_path, y_path=None, output_dir=None):
 	sites = pd.read_csv(f'model_data/GP-age_sites_{title}.csv').iloc[:, 0]
 	logger.info(f'Loading methylation data...')
 	X = pd.read_csv(X_path, index_col=0).T
+	y = None
+	if y_path is None and 'age' in X.columns:
+		y = X['age']
 
 	methylation_array = pd.DataFrame(np.nan, index=X.index, columns=sites)
 	existing_sites = pd.Series(np.intersect1d(sites.values, X.columns.values))
@@ -67,15 +70,17 @@ def predict(m, X_path, y_path=None, output_dir=None):
 	output_results(predictions, 'predictions', output_dir, title)
 
 	# If real age is provided, calculate prediction statistics
-	if y_path is not None:
+	if y_path is not None or y is not None:
 		logger.info('Calculating statistics')
-		y = pd.read_csv(y_path)
 
-		# For support of 2-column csv files
-		if y.shape[1] > 1:
-			y.index = y.iloc[:, 0]
-			y = y.loc[X.index]
-		y = y.iloc[:, -1]
+		if y is None:
+			y = pd.read_csv(y_path)
+
+			# For support of 2-column csv files
+			if y.shape[1] > 1:
+				y.index = y.iloc[:, 0]
+				y = y.loc[X.index]
+			y = y.iloc[:, -1]
 
 		stats = calc_stats(predictions, y)
 		output_results(stats, 'stats', output_dir, title)
