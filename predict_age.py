@@ -4,6 +4,7 @@ import GPy
 import argparse
 import logging
 import pandas as pd
+import numpy as np
 
 from sklearn.metrics import mean_squared_error, median_absolute_error, mean_absolute_error
 from sklearn.impute import SimpleImputer
@@ -40,7 +41,11 @@ def predict(m, X_path, y_path=None, output_dir=None):
 	sites = pd.read_csv(f'model_data/GP-age_sites_{title}.csv').iloc[:, 0]
 	logger.info(f'Loading methylation data...')
 	X = pd.read_csv(X_path, index_col=0).T
-	X = X[sites]
+
+	methylation_array = pd.DataFrame(np.nan, index=X.index, columns=sites)
+	existing_sites = pd.Series(np.intersect1d(sites.values, X.columns.values))
+	methylation_array[existing_sites] = X[existing_sites]
+	X = methylation_array
 	logger.info(f'Successfully loaded {X.shape[0]} samples')
 
 	# Load GP-age model
@@ -50,9 +55,9 @@ def predict(m, X_path, y_path=None, output_dir=None):
 
 	# Fill missing values with the mean beta value of the specific CpG across train samples
 	if X.isna().any(axis=None):
-		logger.info(f'Imputing {X.isna().sum()} missing values')
+		logger.info(f'Imputing {X.isna().values.sum()} missing values')
 		imputer = SimpleImputer().fit(pd.DataFrame(predictor.X, columns=sites))
-		X = pd.DataFrame(data=imputer.transform(X), index=X.index, columns=X.columns.values.tolist())
+		X = pd.DataFrame(data=imputer.transform(X), index=X.index, columns=X.columns)
 
 	# Predict age
 	logger.info('Starting age prediction...')
